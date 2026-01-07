@@ -2,7 +2,7 @@
 
 #include <stdbool.h>
 
-#include "bnkalloc.h"
+typedef struct Arena Arena;
 
 typedef struct {
     const char* data;
