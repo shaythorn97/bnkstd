@@ -30,7 +30,7 @@ bnk_String bnk_string_copy(Arena* a, bnk_String s);
 bnk_String bnk_string_append(Arena* a, bnk_String s1, bnk_String s2);
 
 char* bnk_string_cstr(Arena* a, bnk_String s);
-size_t bnk_string_cstr_size(bnk_String s);
+int64_t bnk_string_cstr_size(bnk_String s);
 
 #ifdef BNK_STRING_IMPLEMENTATION
 
