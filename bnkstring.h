@@ -4,76 +4,71 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define BNKSTRINGDEF
-
 // TODO
 // - this should be replaced with an allocator, the reason being is so that I can use some other memory allocation method if I want
-// - change the type from int to something like int64_t
-typedef struct Arena Arena;
 
 typedef struct {
     const char* data;
     int64_t len;
-} bnk_String;
+} String8;
 
-#define S(s) (bnk_String){ s, sizeof(s) - 1 }
+#define S(s) (String8){ s, sizeof(s) - 1 }
 
-/* this gives us a string that is from the index we want to the end of the string */
-bnk_String bnk_string_from(bnk_String s, int64_t from);
-bnk_String bnk_string_to(bnk_String s, int64_t to);
-bnk_String bnk_string_from_to(bnk_String s, int64_t from, int64_t to);
-bool bnk_string_compare(bnk_String s1, bnk_String s2);
-bool bnk_string_contains(bnk_String s, bnk_String substr);
-int64_t bnk_string_find(bnk_String s, bnk_String substr);
+String8 string_from(String8 s, int64_t from);
+String8 string_to(String8 s, int64_t to);
+String8 string_from_to(String8 s, int64_t from, int64_t to);
+bool string_compare(String8 s1, String8 s2);
+bool string_contains(String8 s, String8 substr);
+int64_t string_find(String8 s, String8 substr);
 
-bnk_String bnk_string_copy(Arena* a, bnk_String s);
-bnk_String bnk_string_append(Arena* a, bnk_String s1, bnk_String s2);
+String8 string_copy(char* buf, int64_t bufSize, String8 s);
+String8 string_append(char* buf, int64_t bufSize, String8 s1, String8 s2);
 
-char* bnk_string_cstr(Arena* a, bnk_String s);
-int64_t bnk_string_cstr_size(bnk_String s);
+char* string_cstr(char* buf, int64_t bufSize, String8 s);
+int64_t string_cstr_size(String8 s);
 
-#ifdef BNK_STRING_IMPLEMENTATION
+#ifndef BNK_STRING_IMPLEMENTATION
 
-BNKSTRINGDEF bnk_String bnk_string_from(bnk_String s, int64_t from) {
+String8 string_from(String8 s, int64_t from) {
     // we need to do some checks in here
 
-    return (bnk_String){
+    return (String8){
         .data = s.data + from,
         .len = s.len - from
     };
 }
 
-BNKSTRINGDEF bnk_String bnk_string_to(bnk_String s, int64_t to) {
-    return (bnk_String){
+String8 string_to(String8 s, int64_t to) {
+    return (String8){
         .data = s.data,
         .len = to
     };
 }
 
-BNKSTRINGDEF bnk_String bnk_string_from_to(bnk_String s, int64_t from, int64_t to) {
-    return (bnk_String){
+ String8 string_from_to(String8 s, int64_t from, int64_t to) {
+    return (String8){
         .data = s.data + from,
         .len = to - from
     };
 }
 
-BNKSTRINGDEF bool bnk_string_compare(bnk_String s1, bnk_String s2) {
+bool string_compare(String8 s1, String8 s2) {
     return s1.len == s2.len && !memcmp(s1.data, s2.data, s1.len);
 }
 
-bool bnk_string_contains(bnk_String s, bnk_String substr) {
+bool string_contains(String8 s, String8 contains) {
     for (int64_t i = 0; i < s.len; i++) {
-        if (substr.len > s.len - i) break;
-        if (!memcmp(s.data + i, substr.data, substr.len)) return true;
+        if (contains.len > s.len - i) break;
+        if (!memcmp(s.data + i, contains.data, contains.len)) return true;
     }
 
     return false;
 }
 
-int64_t bnk_string_find(bnk_String s, bnk_String substr) {
+int64_t string_find(String8 s, String8 find) {
     for (int64_t i = 0; i < s.len; i++) {
-        if (substr.len > s.len - i) break;
-        if (!memcmp(s.data + i, substr.data, substr.len)) return i;
+        if (find.len > s.len - i) break;
+        if (!memcmp(s.data + i, find.data, find.len)) return i;
     } 
 
     return -1;
