@@ -27,7 +27,7 @@ String8 string_append(char* buf, int64_t bufSize, String8 s1, String8 s2);
 char* string_cstr(char* buf, int64_t bufSize, String8 s);
 int64_t string_cstr_size(String8 s);
 
-#ifndef BNK_STRING_IMPLEMENTATION
+#ifdef BNK_STRING_IMPLEMENTATION
 
 String8 string_from(String8 s, int64_t from) {
     // we need to do some checks in here
