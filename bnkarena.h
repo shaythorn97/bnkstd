@@ -26,7 +26,7 @@ void* arena_push_zero(Arena* a, uint64_t size, uint64_t align);
 #define arena_push_array_zero(a, t, n) arena_push_zero((a), sizeof(t) * (n), _Alignof(t))
 #define arena_push_struct_zero(a, t) arena_push_array_zero((a), t, 1)
 
-#ifdef BNK_ALLOC_IMPLEMENTATION
+#ifdef BNK_ARENA_IMPLEMENTATION
 
 // we need to make sure we are handling linux shite
 #ifdef _WIN32
@@ -54,7 +54,7 @@ void arena_reset(Arena* a) {
 }
 
 void* arena_push(Arena* a, uint64_t size, uint64_t align) {
-    uint64_t padding = -a->offset & (align - 1); 
+    uint64_t padding = -a->offset & (align - 1);
     if (a->offset + size + padding > a->cap) return NULL;
 
     void* ptr = a->data + a->offset + padding;

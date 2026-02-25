@@ -4,9 +4,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-// TODO
-// - this should be replaced with an allocator, the reason being is so that I can use some other memory allocation method if I want
-
 typedef struct {
     const char* data;
     int64_t len;
