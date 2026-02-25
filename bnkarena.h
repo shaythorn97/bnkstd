@@ -15,7 +15,6 @@ typedef struct {
 } Arena;
 
 Arena new_arena(uint64_t size);
-
 void arena_delete(Arena* a);
 void arena_reset(Arena* a);
 
@@ -29,18 +28,26 @@ void* arena_push_zero(Arena* a, uint64_t size, uint64_t align);
 
 #ifdef BNK_ALLOC_IMPLEMENTATION
 
+// we need to make sure we are handling linux shite
+#ifdef _WIN32
+    #define WIN32(r) __declspec(dllimport) r __stdcall
+    WIN32(void*) VirtualAlloc(void*, uint64_t, uint32_t, uint32_t);
+    WIN32(uint32_t) VirtualFree(void*, uint64_t, uint32_t);
+#endif
+
 // need to implement VirtualAlloc and mmap instead of pants malloc
 Arena new_arena(uint64_t size) {
     return (Arena){
-        .data = malloc(size),
+        .data = (uint8_t*)VirtualAlloc(NULL, size, 0x1000 | 0x2000, 0x04),
         .cap = size
     };
 }
 
 void arena_delete(Arena* a) {
     if (a->data) {
-        free(a->data);
+        VirtualFree(a->data, 0, 0x8000);
     }
+}
 
 void arena_reset(Arena* a) {
     a->offset = 0; 
