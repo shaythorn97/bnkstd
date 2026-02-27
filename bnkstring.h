@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdalign.h>
 
 typedef struct {
     const char* data;
@@ -15,16 +17,15 @@ String8 string_from(String8 s, int64_t from);
 String8 string_to(String8 s, int64_t to);
 String8 string_from_to(String8 s, int64_t from, int64_t to);
 bool string_compare(String8 s1, String8 s2);
-bool string_contains(String8 s, String8 substr);
-int64_t string_find(String8 s, String8 substr);
+bool string_contains(String8 s, String8 contains);
+int64_t string_find(String8 s, String8 find);
 
-String8 string_copy(char* buf, int64_t bufSize, String8 s);
-String8 string_append(char* buf, int64_t bufSize, String8 s1, String8 s2);
+String8 string_copy(char* buf, uint64_t bufSize, String8 s);
+String8 string_append(char* buf, uint64_t, String8 s, String8 app);
 
-char* string_cstr(char* buf, int64_t bufSize, String8 s);
-int64_t string_cstr_size(String8 s);
+char* string_to_cstr(char* buf, uint64_t bufSize, String8 s);
 
-#ifdef BNK_STRING_IMPLEMENTATION
+// #ifdef BNK_STRING_IMPLEMENTATION
 
 String8 string_from(String8 s, int64_t from) {
     // we need to do some checks in here
@@ -69,6 +70,15 @@ int64_t string_find(String8 s, String8 find) {
     } 
 
     return -1;
+}
+
+char* string_to_cstr(char* buf, uint64_t bufSize, String8 s) {
+    if (bufSize < s.len + 1) return NULL;
+
+    memcpy(buf, s.data, s.len);
+    buf[s.len] = '\0';
+
+    return buf;
 }
 
 #endif
