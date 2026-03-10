@@ -50,7 +50,7 @@ void arena_delete(Arena* a) {
 }
 
 void arena_reset(Arena* a) {
-    a->offset = 0; 
+    a->offset = 0;
 }
 
 void* arena_push(Arena* a, uint64_t size, uint64_t align) {
@@ -64,7 +64,7 @@ void* arena_push(Arena* a, uint64_t size, uint64_t align) {
 }
 
 void* arena_push_zero(Arena* a, uint64_t size, uint64_t align) {
-    uint64_t padding = -a->offset & (align - 1); 
+    uint64_t padding = -a->offset & (align - 1);
     if (a->offset + size + padding > a->cap) return NULL;
 
     void* ptr = a->data + a->offset + padding;

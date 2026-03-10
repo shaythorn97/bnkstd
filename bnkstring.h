@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdalign.h>
 
+typedef struct Allocator Allocator;
+
 typedef struct {
     const char* data;
     int64_t len;
@@ -21,9 +23,13 @@ bool string_contains(String8 s, String8 contains);
 int64_t string_find(String8 s, String8 find);
 
 String8 string_copy(char* buf, uint64_t bufSize, String8 s);
-String8 string_append(char* buf, uint64_t, String8 s, String8 app);
-
+String8 string_append(char* buf, uint64_t bufSize, String8 s, String8 app);
 char* string_to_cstr(char* buf, uint64_t bufSize, String8 s);
+
+// with new custom allocator
+String8 string_copy_alloc(Allocator allocator, String8 s);
+String8 string_append_alloc(Allocator allocator, String8 s, String8 app);
+char* string_to_cstr_alloc(Allocator allocator, String8 s);
 
 #ifdef BNK_STRING_IMPLEMENTATION
 
@@ -67,9 +73,30 @@ int64_t string_find(String8 s, String8 find) {
     for (int64_t i = 0; i < s.len; i++) {
         if (find.len > s.len - i) break;
         if (!memcmp(s.data + i, find.data, find.len)) return i;
-    } 
+    }
 
     return -1;
+}
+
+String8 string_copy(char* buf, uint64_t bufSize, String8 s) {
+    if (!buf || bufSize < s.len) return (String8){0};
+
+    memcpy(buf, s.data, s.len);
+    return (String8){
+        .data = buf,
+        .len = s.len,
+    };
+}
+
+String8 string_append(char* buf, uint64_t bufSize, String8 s, String8 app) {
+    if (!buf || bufSize < s.len + app.len) return (String8){0};
+
+    memcpy(buf, s.data, s.len);
+    memcpy(buf + s.len, app.data, app.len);
+    return (String8){
+        .data = buf,
+        .len = s.len + app.len,
+    };
 }
 
 char* string_to_cstr(char* buf, uint64_t bufSize, String8 s) {
