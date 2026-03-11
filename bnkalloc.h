@@ -8,7 +8,7 @@ typedef struct Allocator {
     void* ctx;
 } Allocator;
 
-#define allocator_alloc_array(a, t, n) (a)->alloc((a)->ctx, sizeof(t) * (n), _Alignof(t))
+#define allocator_alloc_array(a, t, n) ((a)->alloc((a)->ctx, sizeof(t) * (n), _Alignof(t)))
 #define allocator_alloc_type(a, t) allocator_alloc_array(a, t, 1)
 
 // maybe helper funcs?

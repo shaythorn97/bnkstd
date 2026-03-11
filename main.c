@@ -30,19 +30,33 @@ void allocator_arena_free(void* ctx, void* ptr) {
     arena_reset(a);
 }
 
-int main() {
-    Allocator std = {
-        .alloc = allocator_stdlib_alloc,
-        .free = allocator_stdlib_free,
-    };
-
-    Arena persistent = new_arena(1024);
-
-    Allocator arena = {
+Allocator new_allocator(Arena* arena) {
+    return (Allocator){
         .alloc = allocator_arena_alloc,
         .free = allocator_arena_free,
-        .ctx = &persistent,
+        .ctx = arena,
     };
+}
 
-    float* f = allocator_alloc_type(&std, float);
+typedef struct {
+    String8 name;
+    float balance;
+} User;
+
+User* new_user(Allocator* allocator, String8 name, float balance) {
+    User* user = allocator_alloc_type(allocator, User);
+    *user = (User){
+        .name = name,
+        .balance = balance,
+    };  
+
+    return user;
+}
+
+int main() {
+    Arena persistent = new_arena(1024);
+    Allocator aa = new_allocator(&persistent);
+
+    User* user = new_user(&aa, S("Barry"), 100.0f);
+    printf("User: %.*s, %f\n", (int)user->name.len, user->name.data, user->balance);
 }

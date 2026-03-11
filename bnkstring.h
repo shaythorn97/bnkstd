@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+#include <cstring>
 #include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -9,7 +11,7 @@
 typedef struct Allocator Allocator;
 
 typedef struct {
-    const char* data;
+    char* data;
     int64_t len;
 } String8;
 
@@ -30,6 +32,14 @@ char* string_to_cstr(char* buf, uint64_t bufSize, String8 s);
 String8 string_copy_alloc(Allocator allocator, String8 s);
 String8 string_append_alloc(Allocator allocator, String8 s, String8 app);
 char* string_to_cstr_alloc(Allocator allocator, String8 s);
+
+typedef struct {
+    String8 str;
+    int64_t cap;
+} StringBuilder;
+
+void sb_append_string(StringBuilder* sb, String8 app);
+void sb_append_char(StringBuilder* sb, char app);
 
 #ifdef BNK_STRING_IMPLEMENTATION
 
@@ -106,6 +116,19 @@ char* string_to_cstr(char* buf, uint64_t bufSize, String8 s) {
     buf[s.len] = '\0';
 
     return buf;
+}
+
+void sb_append_string(StringBuilder *sb, String8 app) {
+    // if the capacity is big enough then we can add it on
+    if (sb->str.len + app.len > sb->cap) return;
+
+    memcpy(sb->str.data + sb->str.len, app.data, app.len);
+}
+
+void sb_append_char(StringBuilder *sb, char app) {
+    if (sb->str.len + 1 > sb->cap) return;
+
+    sb->str.data[sb->str.len++] = app;
 }
 
 #endif
