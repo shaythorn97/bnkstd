@@ -15,7 +15,7 @@ typedef struct {
     int64_t len;
 } String8;
 
-#define S(s) (String8){ s, sizeof(s) - 1 }
+#define S8(s) (String8){ s, sizeof(s) - 1 }
 
 String8 string_from(String8 s, int64_t from);
 String8 string_to(String8 s, int64_t to);
