@@ -1,15 +1,19 @@
 #pragma once
 
+#include <cstdint>
 #include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdalign.h>
 
+// include this to use!!!
+#define BNK_STRING_IMPL
+
 typedef struct Allocator Allocator;
 
 typedef struct {
-    char* data;
+    uint8_t* data;
     int64_t len;
 } String8;
 
@@ -22,14 +26,14 @@ bool string_compare(String8 s1, String8 s2);
 bool string_contains(String8 s, String8 contains);
 int64_t string_find(String8 s, String8 find);
 
-String8 string_copy(char* buf, uint64_t bufSize, String8 s);
-String8 string_append(char* buf, uint64_t bufSize, String8 s, String8 app);
-char* string_to_cstr(char* buf, uint64_t bufSize, String8 s);
+String8 string_copy(uint8_t* buf, uint64_t bufSize, String8 s);
+String8 string_append(uint8_t* buf, uint64_t bufSize, String8 s, String8 app);
+uint8_t* string_to_cstr(uint8_t* buf, uint64_t bufSize, String8 s);
 
 // with new custom allocator
 String8 string_copy_alloc(Allocator allocator, String8 s);
 String8 string_append_alloc(Allocator allocator, String8 s, String8 app);
-char* string_to_cstr_alloc(Allocator allocator, String8 s);
+uint8_t* string_to_cstr_alloc(Allocator allocator, String8 s);
 
 typedef struct {
     String8 str;
@@ -37,9 +41,9 @@ typedef struct {
 } StringBuilder;
 
 void sb_append_string(StringBuilder* sb, String8 app);
-void sb_append_char(StringBuilder* sb, char app);
+void sb_append_u8(StringBuilder* sb, uint8_t app);
 
-#ifdef BNK_STRING_IMPLEMENTATION
+#ifdef BNK_STRING_IMPL
 
 String8 string_from(String8 s, int64_t from) {
     // we need to do some checks in here
@@ -86,28 +90,30 @@ int64_t string_find(String8 s, String8 find) {
     return -1;
 }
 
-String8 string_copy(char* buf, uint64_t bufSize, String8 s) {
+String8 string_copy(uint8_t* buf, uint64_t bufSize, String8 s) {
     if (!buf || bufSize < s.len) return (String8){0};
 
     memcpy(buf, s.data, s.len);
+
     return (String8){
         .data = buf,
         .len = s.len,
     };
 }
 
-String8 string_append(char* buf, uint64_t bufSize, String8 s, String8 app) {
+String8 string_append(uint8_t* buf, uint64_t bufSize, String8 s, String8 app) {
     if (!buf || bufSize < s.len + app.len) return (String8){0};
 
     memcpy(buf, s.data, s.len);
     memcpy(buf + s.len, app.data, app.len);
+
     return (String8){
         .data = buf,
         .len = s.len + app.len,
     };
 }
 
-char* string_to_cstr(char* buf, uint64_t bufSize, String8 s) {
+uint8_t* string_to_cstr(uint8_t* buf, uint64_t bufSize, String8 s) {
     if (bufSize < s.len + 1) return NULL;
 
     memcpy(buf, s.data, s.len);
@@ -123,7 +129,7 @@ void sb_append_string(StringBuilder *sb, String8 app) {
     memcpy(sb->str.data + sb->str.len, app.data, app.len);
 }
 
-void sb_append_char(StringBuilder *sb, char app) {
+void sb_append_uint8_t(StringBuilder *sb, uint8_t app) {
     if (sb->str.len + 1 > sb->cap) return;
 
     sb->str.data[sb->str.len++] = app;
