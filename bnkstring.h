@@ -6,7 +6,7 @@
 #include <stdalign.h>
 
 // include this to use!!!
-#define BNK_STRING_IMPL
+//#define BNK_STRING_IMPL
 
 typedef struct Allocator Allocator;
 
