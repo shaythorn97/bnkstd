@@ -1,10 +1,8 @@
 #pragma once
 
-#include <cstdint>
 #include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <stdalign.h>
 
 // include this to use!!!
