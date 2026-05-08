@@ -2,61 +2,36 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define BNK_ARENA_IMPLEMENTATION
+#define BNK_ARENA_IMPL
 #include "bnkarena.h"
 
-#define BNK_STRING_IMPLEMENTATION
+#define BNK_STRING_IMPL
 #include "bnkstring.h"
 
-#include "bnkalloc.h"
-
-// some examples of using bnkstring.h and using bnkarena.h
-
-void* allocator_stdlib_alloc(void* ctx, uint64_t size, uint64_t align) {
-    return malloc(size);
-}
-
-void allocator_stdlib_free(void* ctx, void* ptr) {
-    free(ptr);
-}
-
-void* allocator_arena_alloc(void* ctx, uint64_t size, uint64_t align) {
-    Arena* a = (Arena*)ctx;
-    return arena_push(a, size, align);
-}
-
-void allocator_arena_free(void* ctx, void* ptr) {
-    Arena* a = (Arena*)ctx;
-    arena_reset(a);
-}
-
-Allocator new_allocator(Arena* arena) {
-    return (Allocator){
-        .alloc = allocator_arena_alloc,
-        .free = allocator_arena_free,
-        .ctx = arena,
-    };
-}
-
-typedef struct {
-    String8 name;
-    float balance;
-} User;
-
-User* new_user(Allocator* allocator, String8 name, float balance) {
-    User* user = allocator_alloc_type(allocator, User);
-    *user = (User){
-        .name = name,
-        .balance = balance,
-    };  
-
-    return user;
-}
-
 int main() {
-    Arena persistent = new_arena(1024);
-    Allocator aa = new_allocator(&persistent);
+    String8 str = S8("Hello, World!");
 
-    User* user = new_user(&aa, S("Barry"), 100.0f);
-    printf("User: %.*s, %f\n", (int)user->name.len, user->name.data, user->balance);
+    String8 from = string_from(str, 7);
+    printf("%.*s\n", (int)from.len, from.data);
+
+    String8 to = string_to(str, 5);
+    printf("%.*s\n", (int)to.len, to.data);
+
+    String8 fromTo = string_from_to(str, 3, 9);
+    printf("%.*s\n", (int)fromTo.len, fromTo.data);
+
+    bool compareTrue = string_compare(to, S8("Hello"));
+    printf("Compare: %d\n", compareTrue);
+
+    bool compareFalse = string_compare(to, S8("World!"));
+    printf("Compare: %d\n", compareFalse);
+
+    bool containsTrue = string_contains(str, S8("!"));
+    printf("Contains: %d\n", containsTrue);
+
+    bool containsFalse = string_contains(str, S8("-"));
+    printf("Contains: %d\n", containsFalse);
+
+    int64_t find = string_find(str, S8(","));
+    printf("Found at index: %lld\n", find);
 }

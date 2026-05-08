@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdalign.h>
@@ -15,7 +14,7 @@ typedef struct {
     int64_t len;
 } String8;
 
-#define S8(s) (String8){ s, sizeof(s) - 1 }
+#define S8(s) (String8){ (uint8_t*)s, sizeof(s) - 1 }
 
 String8 string_from(String8 s, int64_t from);
 String8 string_to(String8 s, int64_t to);
@@ -42,6 +41,8 @@ void sb_append_string(StringBuilder* sb, String8 app);
 void sb_append_u8(StringBuilder* sb, uint8_t app);
 
 #ifdef BNK_STRING_IMPL
+
+#include <string.h>
 
 String8 string_from(String8 s, int64_t from) {
     // we need to do some checks in here
